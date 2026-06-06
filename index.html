@@ -31,7 +31,7 @@
     .stat-item { text-align: right; }
     .stat-item .val { font-family: 'Space Mono', monospace; font-size: 13px; color: #F0EDE6; }
     .stat-item .lbl { font-size: 10px; color: #4A5168; margin-top: 1px; }
-    .btn-sm { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: #C9A84C; border: 1px solid #C9A84C44; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 7px 16px; border-radius: 99px; text-decoration: none; white-space: nowrap; }
+    .btn-sm { display: inline-flex; align-items: center; background: transparent; color: #C9A84C; border: 1px solid #C9A84C44; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 7px 16px; border-radius: 99px; text-decoration: none; white-space: nowrap; }
     .btn-sm:hover { background: #C9A84C15; border-color: #C9A84C; }
     .divider { border: none; border-top: 1px solid #1E2330; margin: 36px 0; }
     footer { margin-top: 64px; text-align: center; font-family: 'Space Mono', monospace; font-size: 10px; color: #4A5168; }
@@ -46,20 +46,28 @@
     <div class="section-label">Latest Week · 最新一週</div>
     <div class="latest-card">
       <div>
-        <div class="week">24 May 2026</div>
-        <div class="meta">Bulletin dated 31 May 2026 &nbsp;·&nbsp; Total attendance: 746 &nbsp;·&nbsp; Weekly GF: $28,167 <span style="color:#E8A84C">⚠ Watch</span></div>
+        <div class="week">31 May 2026</div>
+        <div class="meta">Bulletin dated 7 June 2026 &nbsp;·&nbsp; Total attendance: 790 &nbsp;·&nbsp; Weekly GF: $21,013 <span style="color:#E85C5C">🔴 Below Target</span></div>
       </div>
-      <a href="church-dashboard-20260524.html" class="btn">↗ Open Dashboard</a>
+      <a href="church-dashboard-20260531.html" class="btn">↗ Open Dashboard</a>
     </div>
 
     <div class="section-label">All Weeks · 所有週次</div>
     <div class="archive-list">
 
       <div class="archive-item">
-        <div>
-          <div class="date">24 May 2026</div>
-          <span class="tag tag-watch">⚠ Watch</span>
+        <div><div class="date">31 May 2026</div><span class="tag tag-below">🔴 Below Target</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">790</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$21,013</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">64%</div><div class="lbl">vs Target · 目標</div></div>
+          <div class="stat-item"><div class="val">$1.82M</div><div class="lbl">YTD GF · 累積</div></div>
         </div>
+        <a href="church-dashboard-20260531.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item">
+        <div><div class="date">24 May 2026</div><span class="tag tag-watch">⚠ Watch</span></div>
         <div class="stats">
           <div class="stat-item"><div class="val">746</div><div class="lbl">Attendance · 出席</div></div>
           <div class="stat-item"><div class="val">$28,167</div><div class="lbl">Weekly GF · 經常費</div></div>
@@ -70,10 +78,7 @@
       </div>
 
       <div class="archive-item">
-        <div>
-          <div class="date">17 May 2026</div>
-          <span class="tag tag-watch">⚠ Watch</span>
-        </div>
+        <div><div class="date">17 May 2026</div><span class="tag tag-watch">⚠ Watch</span></div>
         <div class="stats">
           <div class="stat-item"><div class="val">747</div><div class="lbl">Attendance · 出席</div></div>
           <div class="stat-item"><div class="val">$22,172</div><div class="lbl">Weekly GF · 經常費</div></div>
@@ -84,10 +89,7 @@
       </div>
 
       <div class="archive-item">
-        <div>
-          <div class="date">10 May 2026</div>
-          <span class="tag tag-on">✓ On Target</span>
-        </div>
+        <div><div class="date">10 May 2026</div><span class="tag tag-on">✓ On Target</span></div>
         <div class="stats">
           <div class="stat-item"><div class="val">807</div><div class="lbl">Attendance · 出席</div></div>
           <div class="stat-item"><div class="val">$39,069</div><div class="lbl">Weekly GF · 經常費</div></div>
