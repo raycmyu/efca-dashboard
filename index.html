@@ -16,16 +16,19 @@
     .latest-card{background:linear-gradient(135deg,#1A1608 0%,#13161E 60%);border:1px solid #C9A84C44;border-radius:16px;padding:28px 32px;margin-bottom:48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
     .latest-card .week{font-family:'Playfair Display',serif;font-size:28px;color:#F0EDE6;margin-bottom:6px}
     .latest-card .meta{font-size:13px;color:#7A8099}
+    .year-end-badge{font-family:'Space Mono',monospace;font-size:10px;color:#C9A84C;background:#C9A84C15;border:1px solid #C9A84C33;border-radius:6px;padding:3px 10px;display:inline-block;margin-bottom:8px}
     .btn{display:inline-flex;align-items:center;background:#C9A84C;color:#0D0F14;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px 22px;border-radius:99px;text-decoration:none;white-space:nowrap}
     .btn:hover{background:#E8C97A}
     .archive-list{display:flex;flex-direction:column;gap:10px}
     .archive-item{background:#13161E;border:1px solid #1E2330;border-radius:12px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
     .archive-item:hover{border-color:#C9A84C66}
+    .archive-item.year-end{border-color:#C9A84C44;background:linear-gradient(135deg,#1A1608 0%,#13161E 60%)}
     .archive-item .date{font-size:15px;color:#F0EDE6;font-weight:500;margin-bottom:4px}
     .tag{font-family:'Space Mono',monospace;font-size:10px;padding:3px 10px;border-radius:99px;font-weight:600}
     .tag-on{background:#4CAF8222;color:#4CAF82;border:1px solid #4CAF8244}
     .tag-watch{background:#E8A84C22;color:#E8A84C;border:1px solid #E8A84C44}
     .tag-below{background:#E85C5C22;color:#E85C5C;border:1px solid #E85C5C44}
+    .tag-yearend{background:#C9A84C22;color:#C9A84C;border:1px solid #C9A84C44}
     .stats{display:flex;gap:24px;flex-wrap:wrap}
     .stat-item{text-align:right}
     .stat-item .val{font-family:'Space Mono',monospace;font-size:13px;color:#F0EDE6}
@@ -45,14 +48,26 @@
     <div class="section-label">Latest Week · 最新一週</div>
     <div class="latest-card">
       <div>
-        <div class="week">21 June 2026</div>
-        <div class="meta">Bulletin dated 28 June 2026 &nbsp;·&nbsp; Total attendance: 758 &nbsp;·&nbsp; Weekly GF: $28,392 <span style="color:#E8A84C">⚠ Watch</span></div>
+        <div class="year-end-badge">🎉 2025/26 YEAR-END</div>
+        <div class="week">28 June 2026</div>
+        <div class="meta">Bulletin dated 5 July 2026 &nbsp;·&nbsp; Total attendance: 803 &nbsp;·&nbsp; Full-year GF: $1.95M (114% of target) ✅</div>
       </div>
-      <a href="church-dashboard-20260621.html" class="btn">↗ Open Dashboard</a>
+      <a href="church-dashboard-20260628.html" class="btn">↗ Open Dashboard</a>
     </div>
 
     <div class="section-label">All Weeks · 所有週次</div>
     <div class="archive-list">
+
+      <div class="archive-item year-end">
+        <div><div class="date">28 June 2026</div><span class="tag tag-yearend">🎉 Year-End</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">803</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$21,625</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">$1.95M</div><div class="lbl">Full-Year GF · 全年</div></div>
+          <div class="stat-item"><div class="val">114%</div><div class="lbl">of Annual Target · 目標</div></div>
+        </div>
+        <a href="church-dashboard-20260628.html" class="btn-sm">↗ View</a>
+      </div>
 
       <div class="archive-item">
         <div><div class="date">21 June 2026</div><span class="tag tag-watch">⚠ Watch</span></div>
@@ -102,7 +117,7 @@
         <div><div class="date">24 May 2026</div><span class="tag tag-watch">⚠ Watch</span></div>
         <div class="stats">
           <div class="stat-item"><div class="val">746</div><div class="lbl">Attendance · 出席</div></div>
-          <div class="stat-item"><div class="val">$28,167</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">$28,167</div><div class="lbl">Weekly GF · 経常費</div></div>
           <div class="stat-item"><div class="val">85%</div><div class="lbl">vs Target · 目標</div></div>
           <div class="stat-item"><div class="val">$1.80M</div><div class="lbl">YTD GF · 累積</div></div>
         </div>
