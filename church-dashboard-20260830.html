@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EFCA Weekly Dashboard — 30 August 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&family=Space+Mono&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0D0F14; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #13161E; }
+    ::-webkit-scrollbar-thumb { background: #2E3448; border-radius: 99px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+    const gold="#C9A84C",goldLight="#E8C97A",goldDim="#7A6128",bg="#0D0F14",card="#13161E",cardBorder="#1E2330",textPrimary="#F0EDE6",textMuted="#7A8099",textDim="#4A5168",green="#4CAF82",amber="#E8A84C",red="#E85C5C";
+
+    const data = {
+      date: "30 August 2026", bulletinDate: "6 September 2026 (Communion, Father's Day, Mandarin 25th Anniversary)", etransferPeriod: "24/8/2026 – 30/8/2026",
+      attendanceNote: "12:15pm Cantonese service paused this week.",
+      buildingFundNote: "⚠ Building Fund e-transfer includes another large one-off contribution of $5,600 this week.",
+      attendance: [
+        { label:"Cantonese 8:45am",  zh:"粵語 早堂",  count:188, color:gold },
+        { label:"Cantonese 10:30am", zh:"粵語 中堂",  count:282, color:goldLight },
+        { label:"English Ministry",  zh:"英語事工",   count:138, color:"#6B9ED4" },
+        { label:"Youth Ministry",    zh:"青少年事工", count:64,  color:"#9B7BD4" },
+        { label:"Mandarin Ministry", zh:"國語事工",   count:77,  color:"#6BD4B0" },
+      ],
+      children: [{ label:"8:45am",count:24 },{ label:"10:30am",count:10 },{ label:"12:15pm",count:8 }],
+      funds: [
+        { fund:"General Fund",         zh:"經常費",        cash:{s845:1608.20,s1030:2714.20,s1215:666.10,eng:31.50,mand:1263.30}, etransfer:{cant:10578.23,eng:4265.00,mand:100.00,other:null} },
+        { fund:"Mission Fund",         zh:"差傳基金",      cash:{s845:null,s1030:300.00,s1215:null,eng:20.00,mand:null},           etransfer:{cant:858.00,eng:205.00,mand:null,other:null} },
+        { fund:"Building Fund",        zh:"建堂基金",      cash:{s845:null,s1030:230.00,s1215:null,eng:null,mand:null},            etransfer:{cant:5600.00,eng:40.00,mand:null,other:null} },
+        { fund:"Seminary Student Fund",zh:"神學生助學基金", cash:{s845:null,s1030:null,s1215:null,eng:null,mand:null},              etransfer:{cant:10.00,eng:null,mand:null,other:null} },
+        { fund:"Welfare Fund",         zh:"慈惠基金",      cash:{s845:null,s1030:null,s1215:null,eng:null,mand:null},              etransfer:{cant:10.00,eng:null,mand:null,other:null} },
+        { fund:"Lunch Income",         zh:"午餐收入",      cash:{s845:null,s1030:null,s1215:null,eng:null,mand:null},              etransfer:{cant:1513.00,eng:null,mand:null,other:null} },
+        { fund:"Youth Camp",           zh:"青年營",        cash:{s845:null,s1030:null,s1215:null,eng:null,mand:null},              etransfer:{cant:470.00,eng:null,mand:null,other:null} },
+      ],
+      ytd:{ generalFund:{target:1784177,weeklyTarget:34312,cumTarget:308800,actual:260865}, missionFund:{target:160000,weeklyTarget:null,cumTarget:27692,actual:14534} },
+    };
+
+    const fmt=(n)=>n==null?"—":"$"+n.toLocaleString("en-AU",{minimumFractionDigits:2,maximumFractionDigits:2});
+    const fmtK=(n)=>n>=1000000?"$"+(n/1000000).toFixed(2)+"M":"$"+(n/1000).toFixed(1)+"K";
+    const sumV=(...vals)=>vals.reduce((s,v)=>s+(v||0),0);
+    const fundsWithTotals=data.funds.map(f=>{
+      const cashVals=[f.cash.s845,f.cash.s1030,f.cash.s1215,f.cash.eng,f.cash.mand];
+      const etVals=[f.etransfer.cant,f.etransfer.eng,f.etransfer.mand,f.etransfer.other];
+      const cashTotal=sumV(...cashVals),etTotal=sumV(...etVals);
+      return{...f,cashVals,etVals,cashTotal,etTotal,grandTotal:cashTotal+etTotal};
+    });
+    const cashColTotals=[0,1,2,3,4].map(i=>fundsWithTotals.reduce((s,f)=>s+(f.cashVals[i]||0),0));
+    const cashGrandTotal=cashColTotals.reduce((s,v)=>s+v,0);
+    const etColTotals=[0,1,2,3].map(i=>fundsWithTotals.reduce((s,f)=>s+(f.etVals[i]||0),0));
+    const etGrandTotal=etColTotals.reduce((s,v)=>s+v,0);
+    const totalAttendance=data.attendance.reduce((s,r)=>s+r.count,0);
+    const totalChildren=data.children.reduce((s,r)=>s+r.count,0);
+    const gfRow=fundsWithTotals.find(f=>f.fund==="General Fund");
+    const weeklyGFActual=gfRow?gfRow.grandTotal:0;
+    const weeklyGFTarget=data.ytd.generalFund.weeklyTarget;
+    const weeklyGFPct=Math.min(100,(weeklyGFActual/weeklyGFTarget)*100);
+    const weeklyGFColor=weeklyGFPct>=100?green:weeklyGFPct>=75?amber:red;
+
+    function ProgressBar({value,max,color=gold,thin=false}){const pct=Math.min(100,(value/max)*100);return(<div style={{background:"#1A1E2A",borderRadius:99,overflow:"hidden",height:thin?4:8}}><div style={{width:`${pct}%`,height:"100%",background:color,borderRadius:99,boxShadow:`0 0 8px ${color}66`}}/></div>);}
+    function Card({children,style={}}){return(<div style={{background:card,border:`1px solid ${cardBorder}`,borderRadius:16,padding:"20px 22px",...style}}>{children}</div>);}
+    function SectionLabel({children}){return(<div style={{fontSize:11,fontFamily:"'Space Mono', monospace",color:gold,letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:14}}>{children}</div>);}
+    function StatBig({label,zh,value,sub}){return(<div style={{display:"flex",flexDirection:"column",gap:4}}><div style={{fontSize:36,fontFamily:"'Playfair Display', serif",color:textPrimary,lineHeight:1}}>{value}</div>{sub&&<div style={{fontSize:12,color:textMuted}}>{sub}</div>}<div style={{fontSize:13,color:textPrimary,marginTop:2}}>{label}</div><div style={{fontSize:11,color:textDim}}>{zh}</div></div>);}
+    const thS=(left)=>({textAlign:left?"left":"right",padding:"6px 10px",color:textDim,fontWeight:400,fontSize:11,fontFamily:"'Space Mono', monospace",borderBottom:`1px solid ${cardBorder}`,whiteSpace:"nowrap"});
+    const tdS=(has)=>({padding:"9px 10px",textAlign:"right",color:has?textPrimary:textDim,fontFamily:"'Space Mono', monospace",fontSize:12});
+    const totRowS={borderTop:`2px solid ${cardBorder}`,background:"#1A1E2A"};
+
+    function Dashboard(){
+      const [tab,setTab]=useState("cash");
+      const gf=data.ytd.generalFund,mf=data.ytd.missionFund;
+      const gfOver=gf.actual-gf.cumTarget,mfOver=mf.actual-mf.cumTarget;
+      return(
+        <div style={{minHeight:"100vh",background:bg,color:textPrimary,fontFamily:"'DM Sans', sans-serif",padding:"32px 24px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20,flexWrap:"wrap",gap:12}}>
+            <div>
+              <div style={{fontSize:11,fontFamily:"'Space Mono', monospace",color:gold,letterSpacing:"0.15em",marginBottom:6}}>EVANGELICAL FREE CHURCH OF AUSTRALIA · 澳洲基督教播道會靈福堂</div>
+              <div style={{fontSize:26,fontFamily:"'Playfair Display', serif",color:textPrimary,lineHeight:1.2}}>Weekly Bulletin Dashboard</div>
+              <div style={{fontSize:13,color:textMuted,marginTop:4}}>Statistics for <span style={{color:gold}}>{data.date}</span> · Bulletin dated {data.bulletinDate}</div>
+            </div>
+            <div style={{fontSize:11,fontFamily:"'Space Mono', monospace",color:gold,background:gold+"15",border:`1px solid ${gold}33`,borderRadius:8,padding:"4px 10px"}}>FY2026/27 · WEEK 9</div>
+          </div>
+
+          <div style={{marginBottom:20,padding:"12px 16px",background:amber+"12",border:`1px solid ${amber}33`,borderRadius:12,fontSize:12,color:amber}}>
+            {data.attendanceNote}
+          </div>
+
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(160px, 1fr))",gap:14,marginBottom:20}}>
+            <Card style={{borderColor:gold+"44",background:`linear-gradient(135deg, #1A1608 0%, ${card} 60%)`}}><SectionLabel>Total Attendance · 總出席</SectionLabel><StatBig label="All Services (excl. 12:15pm)" zh="所有崇拜" value={totalAttendance.toLocaleString()}/></Card>
+            <Card><SectionLabel>Cantonese Total · 粵語合計</SectionLabel><StatBig label="2 Sessions" zh="兩堂" value={(188+282).toLocaleString()}/></Card>
+            <Card><SectionLabel>Children · 兒童</SectionLabel><StatBig label="Worship & Sunday School" zh="兒童崇拜/主日學" value={totalChildren}/></Card>
+            <Card style={{borderColor:red+"44"}}><SectionLabel>FY26/27 GF YTD · 新年度經常費</SectionLabel><StatBig label="Below Cumulative Target" zh="累積目標未達" value={fmtK(gf.actual)} sub={`Target: ${fmtK(gf.cumTarget)}`}/></Card>
+            <Card style={{borderColor:red+"44"}}><SectionLabel>FY26/27 Mission YTD · 新年度差傳</SectionLabel><StatBig label="Below Cumulative Target" zh="累積目標未達" value={fmtK(mf.actual)} sub={`Target: ${fmtK(mf.cumTarget)}`}/></Card>
+          </div>
+
+          <Card style={{marginBottom:20}}>
+            <SectionLabel>Attendance by Service · 各崇拜出席人數</SectionLabel>
+            <div style={{display:"flex",flexDirection:"column",gap:13}}>
+              {data.attendance.map(s=>(<div key={s.label}><div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}><div><span style={{fontSize:13,color:textPrimary}}>{s.label}</span><span style={{fontSize:11,color:textDim,marginLeft:8}}>{s.zh}</span></div><span style={{fontSize:14,fontFamily:"'Space Mono', monospace",color:s.color}}>{s.count}</span></div><ProgressBar value={s.count} max={300} color={s.color}/></div>))}
+            </div>
+            <div style={{marginTop:20,paddingTop:16,borderTop:`1px solid ${cardBorder}`}}>
+              <div style={{fontSize:12,color:textMuted,marginBottom:10}}>Children's Worship / Sunday School · 兒童崇拜/主日學</div>
+              <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+                {data.children.map(c=>(<div key={c.label} style={{flex:"1 1 80px",background:"#1A1E2A",borderRadius:10,padding:"10px 14px",textAlign:"center"}}><div style={{fontSize:22,fontFamily:"'Playfair Display', serif",color:textPrimary}}>{c.count}</div><div style={{fontSize:11,color:textMuted,marginTop:2}}>{c.label}</div></div>))}
+                <div style={{flex:"1 1 80px",background:"#1A1E2A",borderRadius:10,padding:"10px 14px",textAlign:"center"}}><div style={{fontSize:22,fontFamily:"'Playfair Display', serif",color:gold}}>{totalChildren}</div><div style={{fontSize:11,color:textMuted,marginTop:2}}>Total · 合計</div></div>
+              </div>
+            </div>
+          </Card>
+
+          <Card style={{marginBottom:20}}>
+            <SectionLabel>Offertory · 奉獻</SectionLabel>
+            {data.buildingFundNote && <div style={{fontSize:11,color:amber,background:amber+"15",border:`1px solid ${amber}33`,borderRadius:8,padding:"8px 12px",marginBottom:16}}>{data.buildingFundNote}</div>}
+            <div style={{display:"flex",gap:4,marginBottom:18,background:"#0D0F14",borderRadius:10,padding:4,width:"fit-content"}}>
+              {[{key:"cash",label:"Cash · 現金"},{key:"etransfer",label:"E-Transfer · 電子轉賬"},{key:"combined",label:"Combined · 合計"}].map(t=>(<button key={t.key} onClick={()=>setTab(t.key)} style={{background:tab===t.key?gold:"transparent",color:tab===t.key?"#0D0F14":textMuted,border:"none",borderRadius:7,padding:"6px 14px",fontSize:12,fontFamily:"'DM Sans', sans-serif",fontWeight:500,cursor:"pointer"}}>{t.label}</button>))}
+            </div>
+            {tab==="cash"&&(<div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}><thead><tr>{["Fund · 基金","8:45am","10:30am","12:15pm","English · 英語","Mandarin · 國語","Cash Total · 現金合計"].map((h,i)=><th key={h} style={thS(i===0)}>{h}</th>)}</tr></thead><tbody>{fundsWithTotals.map((r,i)=>(<tr key={i} style={{borderBottom:`1px solid ${cardBorder}22`}}><td style={{padding:"9px 10px"}}><div style={{color:textPrimary}}>{r.fund}</div><div style={{fontSize:11,color:textDim}}>{r.zh}</div></td>{r.cashVals.map((v,j)=><td key={j} style={tdS(!!v)}>{fmt(v)}</td>)}<td style={{...tdS(r.cashTotal>0),color:gold,fontWeight:600}}>{r.cashTotal>0?fmt(r.cashTotal):"—"}</td></tr>))}<tr style={totRowS}><td style={{padding:"9px 10px",color:textPrimary,fontWeight:600,fontSize:12}}>Total · 合計</td>{cashColTotals.map((v,i)=><td key={i} style={{...tdS(v>0),color:v>0?goldLight:textDim,fontWeight:600}}>{v>0?fmt(v):"—"}</td>)}<td style={{padding:"9px 10px",textAlign:"right",fontFamily:"'Space Mono', monospace",fontSize:13,color:goldLight,fontWeight:700}}>{fmt(cashGrandTotal)}</td></tr></tbody></table></div>)}
+            {tab==="etransfer"&&(<div><div style={{fontSize:11,color:textDim,marginBottom:12}}>Period: {data.etransferPeriod} · Westpac BSB 032-091 Acc 351813</div><div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}><thead><tr>{["Fund · 基金","Cantonese · 粵語","English · 英語","Mandarin · 國語","Other · 其他","E-Transfer Total · 轉賬合計"].map((h,i)=><th key={h} style={thS(i===0)}>{h}</th>)}</tr></thead><tbody>{fundsWithTotals.map((r,i)=>(<tr key={i} style={{borderBottom:`1px solid ${cardBorder}22`}}><td style={{padding:"9px 10px"}}><div style={{color:textPrimary}}>{r.fund}</div><div style={{fontSize:11,color:textDim}}>{r.zh}</div></td>{r.etVals.map((v,j)=><td key={j} style={tdS(!!v)}>{fmt(v)}</td>)}<td style={{...tdS(r.etTotal>0),color:gold,fontWeight:600}}>{r.etTotal>0?fmt(r.etTotal):"—"}</td></tr>))}<tr style={totRowS}><td style={{padding:"9px 10px",color:textPrimary,fontWeight:600,fontSize:12}}>Total · 合計</td>{etColTotals.map((v,i)=><td key={i} style={{...tdS(v>0),color:v>0?goldLight:textDim,fontWeight:600}}>{v>0?fmt(v):"—"}</td>)}<td style={{padding:"9px 10px",textAlign:"right",fontFamily:"'Space Mono', monospace",fontSize:13,color:goldLight,fontWeight:700}}>{fmt(etGrandTotal)}</td></tr></tbody></table></div></div>)}
+            {tab==="combined"&&(<div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}><thead><tr>{["Fund · 基金","Cash · 現金","E-Transfer · 電子轉賬","Grand Total · 總合計"].map((h,i)=><th key={h} style={thS(i===0)}>{h}</th>)}</tr></thead><tbody>{fundsWithTotals.map((r,i)=>(<tr key={i} style={{borderBottom:`1px solid ${cardBorder}22`}}><td style={{padding:"9px 10px"}}><div style={{color:textPrimary}}>{r.fund}</div><div style={{fontSize:11,color:textDim}}>{r.zh}</div></td><td style={tdS(r.cashTotal>0)}>{r.cashTotal>0?fmt(r.cashTotal):"—"}</td><td style={tdS(r.etTotal>0)}>{r.etTotal>0?fmt(r.etTotal):"—"}</td><td style={{...tdS(r.grandTotal>0),color:r.grandTotal>0?gold:textDim,fontWeight:600}}>{r.grandTotal>0?fmt(r.grandTotal):"—"}</td></tr>))}<tr style={totRowS}><td style={{padding:"9px 10px",color:textPrimary,fontWeight:600,fontSize:12}}>Total · 合計</td><td style={{padding:"9px 10px",textAlign:"right",fontFamily:"'Space Mono', monospace",fontSize:12,color:goldLight,fontWeight:600}}>{fmt(cashGrandTotal)}</td><td style={{padding:"9px 10px",textAlign:"right",fontFamily:"'Space Mono', monospace",fontSize:12,color:goldLight,fontWeight:600}}>{fmt(etGrandTotal)}</td><td style={{padding:"9px 10px",textAlign:"right",fontFamily:"'Space Mono', monospace",fontSize:14,color:goldLight,fontWeight:700}}>{fmt(cashGrandTotal+etGrandTotal)}</td></tr></tbody></table></div>)}
+          </Card>
+
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:14,marginBottom:20}}>
+            <Card style={{borderColor:green+"33"}}>
+              <SectionLabel>FY2026/27 · General Fund · 經常費</SectionLabel>
+              <div style={{display:"flex",gap:16,marginBottom:16,flexWrap:"wrap"}}>
+                <div><div style={{fontSize:11,color:textDim,marginBottom:3}}>Annual Target · 年度目標</div><div style={{fontSize:18,fontFamily:"'Playfair Display', serif",color:textPrimary}}>{fmtK(gf.target)}</div></div>
+                <div><div style={{fontSize:11,color:textDim,marginBottom:3}}>Weekly Target · 每週目標</div><div style={{fontSize:18,fontFamily:"'Playfair Display', serif",color:textPrimary}}>{fmtK(gf.weeklyTarget)}</div></div>
+              </div>
+              <div style={{marginBottom:14,padding:"12px 14px",background:"#0D0F14",borderRadius:12,border:`1px solid ${cardBorder}`}}>
+                <div style={{fontSize:11,color:textDim,marginBottom:8,fontFamily:"'Space Mono', monospace",letterSpacing:"0.1em"}}>THIS WEEK · 本週經常費</div>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:8}}><div><span style={{fontSize:22,fontFamily:"'Playfair Display', serif",color:weeklyGFColor}}>{fmt(weeklyGFActual)}</span><span style={{fontSize:11,color:textDim,marginLeft:8}}>cash + e-transfer</span></div><div style={{textAlign:"right"}}><div style={{fontSize:11,color:textDim}}>Target · 目標</div><div style={{fontSize:13,fontFamily:"'Space Mono', monospace",color:textMuted}}>{fmt(weeklyGFTarget)}</div></div></div>
+                <ProgressBar value={weeklyGFActual} max={weeklyGFTarget} color={weeklyGFColor}/>
+                <div style={{display:"flex",justifyContent:"space-between",marginTop:6}}><span style={{fontSize:11,color:weeklyGFColor}}>{weeklyGFActual>=weeklyGFTarget?`▲ ${fmt(weeklyGFActual-weeklyGFTarget)} above target`:`▼ ${fmt(weeklyGFTarget-weeklyGFActual)} below target`}</span><span style={{fontSize:11,color:textDim}}>{weeklyGFPct.toFixed(0)}% of target</span></div>
+              </div>
+              <div style={{marginBottom:10}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}><span style={{fontSize:12,color:textMuted}}>Cumulative Target · 累積目標</span><span style={{fontSize:12,fontFamily:"'Space Mono', monospace",color:textMuted}}>{fmt(gf.cumTarget)}</span></div><ProgressBar value={gf.cumTarget} max={gf.target} color={cardBorder} thin={true}/></div>
+              <div style={{marginBottom:10}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}><span style={{fontSize:12,color:textPrimary}}>Actual YTD · 實收</span><span style={{fontSize:12,fontFamily:"'Space Mono', monospace",color:red}}>{fmt(gf.actual)}</span></div><ProgressBar value={gf.actual} max={gf.target} color={red}/></div>
+              <div style={{marginTop:14,padding:"10px 14px",background:red+"15",border:`1px solid ${red}33`,borderRadius:10,display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:12,color:red}}>Below Cumulative Target · 未達累積目標</span><span style={{fontFamily:"'Space Mono', monospace",fontSize:14,color:red}}>{fmt(gfOver)}</span></div>
+            </Card>
+            <Card style={{borderColor:green+"33"}}>
+              <SectionLabel>FY2026/27 · Mission Fund · 差傳基金</SectionLabel>
+              <div style={{display:"flex",gap:16,marginBottom:16}}><div><div style={{fontSize:11,color:textDim,marginBottom:3}}>Annual Target · 年度目標</div><div style={{fontSize:18,fontFamily:"'Playfair Display', serif",color:textPrimary}}>{fmtK(mf.target)}</div></div></div>
+              <div style={{marginBottom:10}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}><span style={{fontSize:12,color:textMuted}}>Cumulative Target · 累積目標</span><span style={{fontSize:12,fontFamily:"'Space Mono', monospace",color:textMuted}}>{fmt(mf.cumTarget)}</span></div><ProgressBar value={mf.cumTarget} max={mf.target} color={cardBorder} thin={true}/></div>
+              <div style={{marginBottom:10}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}><span style={{fontSize:12,color:textPrimary}}>Actual YTD · 實收</span><span style={{fontSize:12,fontFamily:"'Space Mono', monospace",color:red}}>{fmt(mf.actual)}</span></div><ProgressBar value={mf.actual} max={mf.target} color={red}/></div>
+              <div style={{marginTop:14,padding:"10px 14px",background:red+"15",border:`1px solid ${red}33`,borderRadius:10,display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:12,color:red}}>Below Cumulative Target · 未達累積目標</span><span style={{fontFamily:"'Space Mono', monospace",fontSize:14,color:red}}>{fmt(mfOver)}</span></div>
+            </Card>
+          </div>
+          <div style={{textAlign:"center",fontSize:11,color:textDim,fontFamily:"'Space Mono', monospace",paddingTop:8}}>EFCA · 澳洲基督教播道會靈福堂 · 518 Pacific Highway, Lane Cove North NSW 2066 · office@efca.org.au</div>
+        </div>
+      );
+    }
+    const root=ReactDOM.createRoot(document.getElementById("root"));
+    root.render(React.createElement(Dashboard));
+  </script>
+</body>
+</html>
