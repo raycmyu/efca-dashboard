@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EFCA Dashboard — 20 September 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #0D0F14; color: #F0EDE6; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #1E2330; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const gold="#C9A84C", goldLight="#E8C97A", goldDim="#7A6128", bg="#0D0F14", card="#13161E",
+      cardBorder="#1E2330", textPrimary="#F0EDE6", textMuted="#7A8099", textDim="#4A5168",
+      green="#4CAF82", amber="#E8A84C", red="#E85C5C";
+
+const data = {
+  date: "20 September 2026",
+  bulletinDate: "27 September 2026",
+  etransferPeriod: "14–20 September 2026",
+  attendance: [
+    { label: "8:45am · 早堂", zh: "粵語", count: 214, color: gold },
+    { label: "10:30am · 二堂", zh: "粵語", count: 252, color: gold },
+    { label: "12:15pm · 三堂", zh: "粵語", count: 70, color: gold },
+    { label: "English Ministry · 英語堂", zh: "", count: 132, color: goldLight },
+    { label: "Youth Ministry · 青少年", zh: "", count: 55, color: "#8CC9E8" },
+    { label: "Mandarin Ministry · 國語堂", zh: "", count: 63, color: "#E88CC9" },
+  ],
+  children: [
+    { label: "8:45am", count: 31 },
+    { label: "10:30am", count: 7 },
+    { label: "12:15pm", count: 9 },
+  ],
+  funds: [
+    { fund: "General Fund", zh: "常費", cash: { s845: 1444.00, s1030: 2673.35, s1215: 583.25, eng: 25.00, mand: 1832.50 },
+      etransfer: { cant: 12234.72, eng: 6231.33, mand: 1350.00 } },
+    { fund: "Mission Fund", zh: "宣教基金", cash: { s845: 100.00 },
+      etransfer: { cant: 390.00, eng: 195.00 } },
+    { fund: "Building Fund", zh: "建堂基金", cash: { s845: 300.00 },
+      etransfer: { cant: 200.00, eng: 40.00 } },
+    { fund: "Seminary Student Fund", zh: "神學生基金", cash: { s845: 685.00 },
+      etransfer: { cant: 10.00 } },
+    { fund: "Welfare Fund", zh: "福利基金", cash: {},
+      etransfer: { cant: 10.00 } },
+    { fund: "Lunch Income", zh: "午餐收入", cash: {},
+      etransfer: { cant: 1562.00 } },
+    { fund: "Youth Camp", zh: "青年營", cash: {},
+      etransfer: { cant: 690.00 } },
+  ],
+  childrenOffertory: { s1030: 60.00 },
+  ytd: {
+    generalFund: { annualTarget: 1784177, weeklyTarget: 34312, cumTarget: 411733, actual: 343039 },
+    missionFund: { annualTarget: 160000, cumTarget: 36923, actual: 19666 }
+  }
+};
+
+const fmt = (n) => (n == null ? "—" : "$" + n.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+const fmtK = (n) => {
+  if (n == null) return "—";
+  if (Math.abs(n) >= 1000000) return "$" + (n / 1000000).toFixed(2) + "M";
+  if (Math.abs(n) >= 1000) return "$" + (n / 1000).toFixed(1) + "K";
+  return "$" + n.toFixed(0);
+};
+const sumV = (...vals) => vals.reduce((s, v) => s + (v || 0), 0);
+
+const fundsWithTotals = data.funds.map(f => {
+  const cashVals = [f.cash.s845, f.cash.s1030, f.cash.s1215, f.cash.eng, f.cash.mand];
+  const etVals = [f.etransfer.cant, f.etransfer.eng, f.etransfer.mand];
+  const cashTotal = sumV(...cashVals);
+  const etTotal = sumV(...etVals);
+  return { ...f, cashVals, etVals, cashTotal, etTotal, grandTotal: cashTotal + etTotal };
+});
+
+const totalCash = sumV(...fundsWithTotals.map(f => f.cashTotal)) + sumV(data.childrenOffertory.s1030);
+const totalET = sumV(...fundsWithTotals.map(f => f.etTotal));
+const totalAttendance = sumV(...data.attendance.map(a => a.count));
+const totalChildren = sumV(...data.children.map(c => c.count));
+
+const gfWeek = fundsWithTotals.find(f => f.fund === "General Fund");
+const gfWeekTotal = gfWeek.grandTotal;
+const gfWeekPct = Math.round((gfWeekTotal / data.ytd.generalFund.weeklyTarget) * 100);
+const gfYtdPct = Math.round((data.ytd.generalFund.actual / data.ytd.generalFund.cumTarget) * 100);
+const missionYtdPct = Math.round((data.ytd.missionFund.actual / data.ytd.missionFund.cumTarget) * 100);
+
+function statusOf(pct) {
+  if (pct >= 100) return { label: "On Target", color: green, icon: "✅" };
+  if (pct >= 75) return { label: "Watch", color: amber, icon: "⚠️" };
+  return { label: "Below Target", color: red, icon: "🔴" };
+}
+const gfWeekStatus = statusOf(gfWeekPct);
+const gfYtdStatus = statusOf(gfYtdPct);
+const missionYtdStatus = statusOf(missionYtdPct);
+
+function ProgressBar({ value, max, color, thin }) {
+  const pct = Math.min(100, Math.max(0, (value / max) * 100));
+  return (
+    <div style={{ width: "100%", height: thin ? 6 : 10, background: "#1A1E29", borderRadius: 6, overflow: "hidden" }}>
+      <div style={{ width: pct + "%", height: "100%", background: color, borderRadius: 6, transition: "width 0.6s ease" }} />
+    </div>
+  );
+}
+
+function Card({ children, style }) {
+  return (
+    <div style={{ background: card, border: `1px solid ${cardBorder}`, borderRadius: 14, padding: 24, ...style }}>
+      {children}
+    </div>
+  );
+}
+
+function SectionLabel({ children }) {
+  return (
+    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 2, color: gold, textTransform: "uppercase", marginBottom: 14 }}>
+      {children}
+    </div>
+  );
+}
+
+function StatBig({ label, zh, value, sub, color }) {
+  return (
+    <div>
+      <div style={{ fontSize: 13, color: textMuted, marginBottom: 4 }}>{label}{zh ? <span style={{ color: textDim }}> · {zh}</span> : null}</div>
+      <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 32, fontWeight: 700, color: color || textPrimary }}>{value}</div>
+      {sub && <div style={{ fontSize: 12, color: textDim, marginTop: 2 }}>{sub}</div>}
+    </div>
+  );
+}
+
+function Dashboard() {
+  const [tab, setTab] = useState("cash");
+
+  const cashHeader = ["Fund · 基金", "8:45am", "10:30am", "12:15pm", "English · 英語", "Mandarin · 國語", "Cash Total · 現金合計"];
+  const cashColTotals = [0, 1, 2, 3, 4].map(i => sumV(...fundsWithTotals.map(f => f.cashVals[i])));
+
+  const etHeader = ["Fund · 基金", "Cantonese · 粵語", "English · 英語", "Mandarin · 國語", "E-Transfer Total · 電轉合計"];
+  const etColTotals = [0, 1, 2].map(i => sumV(...fundsWithTotals.map(f => f.etVals[i])));
+
+  return (
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 24px 80px" }}>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 32, flexWrap: "wrap", gap: 16 }}>
+        <div>
+          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: textMuted, letterSpacing: 1, marginBottom: 6 }}>
+            澳洲基督教播道會靈福堂 · EFCA
+          </div>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 40, fontWeight: 700, color: textPrimary }}>
+            Sunday, {data.date}
+          </h1>
+          <div style={{ fontSize: 13, color: textMuted, marginTop: 4 }}>
+            Bulletin published {data.bulletinDate} · E-Transfer period {data.etransferPeriod}
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <span style={{ background: "rgba(201,168,76,0.12)", border: `1px solid ${goldDim}`, color: gold, fontFamily: "'Space Mono', monospace", fontSize: 12, padding: "6px 14px", borderRadius: 20 }}>
+            FY2026/27 · Week 12
+          </span>
+        </div>
+      </div>
+
+      {/* KPI Row */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
+        <Card><StatBig label="Total Attendance" zh="總出席人數" value={totalAttendance} /></Card>
+        <Card><StatBig label="Children's Ministry" zh="兒童事工" value={totalChildren} /></Card>
+        <Card><StatBig label="Total Cash Offertory" zh="現金奉獻總額" value={fmtK(totalCash)} /></Card>
+        <Card><StatBig label="Total E-Transfer" zh="電轉奉獻總額" value={fmtK(totalET)} /></Card>
+      </div>
+
+      {/* Attendance */}
+      <Card style={{ marginBottom: 24 }}>
+        <SectionLabel>Attendance · 崇拜人數</SectionLabel>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
+          {data.attendance.map((a, i) => (
+            <div key={i}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontSize: 14, color: textPrimary }}>{a.label}</span>
+                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: a.color, fontWeight: 700 }}>{a.count}</span>
+              </div>
+              <ProgressBar value={a.count} max={260} color={a.color} thin />
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 20, paddingTop: 16, borderTop: `1px solid ${cardBorder}`, display: "flex", gap: 32, flexWrap: "wrap" }}>
+          {data.children.map((c, i) => (
+            <div key={i} style={{ fontSize: 13, color: textMuted }}>
+              Children {c.label}: <span style={{ color: textPrimary, fontWeight: 700 }}>{c.count}</span>
+            </div>
+          ))}
+          <div style={{ fontSize: 13, color: textMuted }}>
+            Children's Total: <span style={{ color: goldLight, fontWeight: 700 }}>{totalChildren}</span>
+          </div>
+        </div>
+      </Card>
+
+      {/* Offertory */}
+      <Card style={{ marginBottom: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+          <SectionLabel>Offertory · 奉獻</SectionLabel>
+          <div style={{ display: "flex", gap: 4, background: "#0D0F14", padding: 4, borderRadius: 10 }}>
+            {["cash", "etransfer", "combined"].map(t => (
+              <button key={t} onClick={() => setTab(t)} style={{
+                background: tab === t ? gold : "transparent",
+                color: tab === t ? "#0D0F14" : textMuted,
+                border: "none", borderRadius: 8, padding: "6px 16px", fontSize: 13, fontFamily: "'DM Sans', sans-serif",
+                fontWeight: tab === t ? 700 : 400, cursor: "pointer", transition: "all 0.2s"
+              }}>
+                {t === "cash" ? "Cash" : t === "etransfer" ? "E-Transfer" : "Combined"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {tab === "cash" && (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr>{cashHeader.map((h, i) => (
+                  <th key={i} style={{ textAlign: i === 0 ? "left" : "right", padding: "8px 10px", color: textMuted, fontWeight: 500, borderBottom: `1px solid ${cardBorder}`, whiteSpace: "nowrap" }}>{h}</th>
+                ))}</tr>
+              </thead>
+              <tbody>
+                {fundsWithTotals.map((f, i) => (
+                  <tr key={i}>
+                    <td style={{ padding: "10px", color: textPrimary }}>{f.fund} <span style={{ color: textDim }}>· {f.zh}</span></td>
+                    {f.cashVals.map((v, j) => (
+                      <td key={j} style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: v == null ? textDim : textPrimary }}>{fmt(v)}</td>
+                    ))}
+                    <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: goldLight, fontWeight: 700 }}>{fmt(f.cashTotal)}</td>
+                  </tr>
+                ))}
+                <tr>
+                  <td style={{ padding: "10px", color: textPrimary }}>Children's Offertory <span style={{ color: textDim }}>· 兒童奉獻</span></td>
+                  <td></td>
+                  <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: textPrimary }}>{fmt(data.childrenOffertory.s1030)}</td>
+                  <td></td><td></td><td></td>
+                  <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: goldLight, fontWeight: 700 }}>{fmt(data.childrenOffertory.s1030)}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr style={{ borderTop: `2px solid ${cardBorder}` }}>
+                  <td style={{ padding: "12px 10px", color: gold, fontWeight: 700 }}>Column Total · 合計</td>
+                  {cashColTotals.map((v, j) => (
+                    <td key={j} style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(v + (j === 1 ? data.childrenOffertory.s1030 : 0))}</td>
+                  ))}
+                  <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(totalCash)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        )}
+
+        {tab === "etransfer" && (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr>{etHeader.map((h, i) => (
+                  <th key={i} style={{ textAlign: i === 0 ? "left" : "right", padding: "8px 10px", color: textMuted, fontWeight: 500, borderBottom: `1px solid ${cardBorder}`, whiteSpace: "nowrap" }}>{h}</th>
+                ))}</tr>
+              </thead>
+              <tbody>
+                {fundsWithTotals.map((f, i) => (
+                  <tr key={i}>
+                    <td style={{ padding: "10px", color: textPrimary }}>{f.fund} <span style={{ color: textDim }}>· {f.zh}</span></td>
+                    {f.etVals.map((v, j) => (
+                      <td key={j} style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: v == null ? textDim : textPrimary }}>{fmt(v)}</td>
+                    ))}
+                    <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: goldLight, fontWeight: 700 }}>{fmt(f.etTotal)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr style={{ borderTop: `2px solid ${cardBorder}` }}>
+                  <td style={{ padding: "12px 10px", color: gold, fontWeight: 700 }}>Column Total · 合計</td>
+                  {etColTotals.map((v, j) => (
+                    <td key={j} style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(v)}</td>
+                  ))}
+                  <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(totalET)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        )}
+
+        {tab === "combined" && (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: "left", padding: "8px 10px", color: textMuted, fontWeight: 500, borderBottom: `1px solid ${cardBorder}` }}>Fund · 基金</th>
+                  <th style={{ textAlign: "right", padding: "8px 10px", color: textMuted, fontWeight: 500, borderBottom: `1px solid ${cardBorder}` }}>Cash · 現金</th>
+                  <th style={{ textAlign: "right", padding: "8px 10px", color: textMuted, fontWeight: 500, borderBottom: `1px solid ${cardBorder}` }}>E-Transfer · 電轉</th>
+                  <th style={{ textAlign: "right", padding: "8px 10px", color: textMuted, fontWeight: 500, borderBottom: `1px solid ${cardBorder}` }}>Total · 合計</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fundsWithTotals.map((f, i) => (
+                  <tr key={i}>
+                    <td style={{ padding: "10px", color: textPrimary }}>{f.fund} <span style={{ color: textDim }}>· {f.zh}</span></td>
+                    <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: textPrimary }}>{fmt(f.cashTotal)}</td>
+                    <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: textPrimary }}>{fmt(f.etTotal)}</td>
+                    <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: goldLight, fontWeight: 700 }}>{fmt(f.grandTotal)}</td>
+                  </tr>
+                ))}
+                <tr>
+                  <td style={{ padding: "10px", color: textPrimary }}>Children's Offertory <span style={{ color: textDim }}>· 兒童奉獻</span></td>
+                  <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: textPrimary }}>{fmt(data.childrenOffertory.s1030)}</td>
+                  <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: textDim }}>—</td>
+                  <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: goldLight, fontWeight: 700 }}>{fmt(data.childrenOffertory.s1030)}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr style={{ borderTop: `2px solid ${cardBorder}` }}>
+                  <td style={{ padding: "12px 10px", color: gold, fontWeight: 700 }}>Grand Total · 總計</td>
+                  <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(totalCash)}</td>
+                  <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(totalET)}</td>
+                  <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(totalCash + totalET)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        )}
+      </Card>
+
+      {/* YTD */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))", gap: 24 }}>
+        <Card>
+          <SectionLabel>General Fund · 常費基金 — YTD FY2026/27</SectionLabel>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
+            <div style={{ fontSize: 13, color: textMuted }}>This Week vs Weekly Target</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span>{gfWeekStatus.icon}</span>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: gfWeekStatus.color, fontWeight: 700 }}>{gfWeekPct}% · {gfWeekStatus.label}</span>
+            </div>
+          </div>
+          <ProgressBar value={gfWeekTotal} max={data.ytd.generalFund.weeklyTarget} color={gfWeekStatus.color} />
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: textDim, marginTop: 6, marginBottom: 22 }}>
+            <span>{fmtK(gfWeekTotal)} received</span>
+            <span>Target: {fmtK(data.ytd.generalFund.weeklyTarget)}/wk</span>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
+            <div style={{ fontSize: 13, color: textMuted }}>Full-Year Cumulative Progress</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span>{gfYtdStatus.icon}</span>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: gfYtdStatus.color, fontWeight: 700 }}>{gfYtdPct}% · {gfYtdStatus.label}</span>
+            </div>
+          </div>
+          <ProgressBar value={data.ytd.generalFund.actual} max={data.ytd.generalFund.cumTarget} color={gfYtdStatus.color} />
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: textDim, marginTop: 6 }}>
+            <span>{fmtK(data.ytd.generalFund.actual)} actual</span>
+            <span>Target to date: {fmtK(data.ytd.generalFund.cumTarget)}</span>
+          </div>
+          <div style={{ fontSize: 12, color: red, marginTop: 4 }}>
+            Shortfall: {fmtK(data.ytd.generalFund.actual - data.ytd.generalFund.cumTarget)}
+          </div>
+          <div style={{ fontSize: 11, color: textDim, marginTop: 14, paddingTop: 12, borderTop: `1px solid ${cardBorder}` }}>
+            Annual Target: {fmtK(data.ytd.generalFund.annualTarget)}
+          </div>
+        </Card>
+
+        <Card>
+          <SectionLabel>Mission Fund · 宣教基金 — YTD FY2026/27</SectionLabel>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
+            <div style={{ fontSize: 13, color: textMuted }}>Full-Year Cumulative Progress</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span>{missionYtdStatus.icon}</span>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: missionYtdStatus.color, fontWeight: 700 }}>{missionYtdPct}% · {missionYtdStatus.label}</span>
+            </div>
+          </div>
+          <ProgressBar value={data.ytd.missionFund.actual} max={data.ytd.missionFund.cumTarget} color={missionYtdStatus.color} />
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: textDim, marginTop: 6 }}>
+            <span>{fmtK(data.ytd.missionFund.actual)} actual</span>
+            <span>Target to date: {fmtK(data.ytd.missionFund.cumTarget)}</span>
+          </div>
+          <div style={{ fontSize: 12, color: red, marginTop: 4 }}>
+            Shortfall: {fmtK(data.ytd.missionFund.actual - data.ytd.missionFund.cumTarget)}
+          </div>
+          <div style={{ fontSize: 11, color: textDim, marginTop: 14, paddingTop: 12, borderTop: `1px solid ${cardBorder}` }}>
+            Annual Target: {fmtK(data.ytd.missionFund.annualTarget)}
+          </div>
+        </Card>
+      </div>
+
+      <div style={{ textAlign: "center", marginTop: 40, fontSize: 12, color: textDim }}>
+        澳洲基督教播道會靈福堂 · Evangelical Free Church of Australia — Ling Fook Church
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<Dashboard />);
+</script>
+</body>
+</html>
