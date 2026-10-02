@@ -1,402 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EFCA Dashboard — 27 September 2026</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: #0D0F14; color: #F0EDE6; }
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-thumb { background: #1E2330; border-radius: 4px; }
-</style>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EFCA Weekly Dashboards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&family=Space+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0D0F14;color:#F0EDE6;font-family:'DM Sans',sans-serif;min-height:100vh;padding:48px 24px}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#13161E}::-webkit-scrollbar-thumb{background:#2E3448;border-radius:99px}
+    .container{max-width:860px;margin:0 auto}
+    .eyebrow{font-family:'Space Mono',monospace;font-size:11px;color:#C9A84C;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px}
+    h1{font-family:'Playfair Display',serif;font-size:32px;color:#F0EDE6;line-height:1.2;margin-bottom:8px}
+    .subtitle{font-size:14px;color:#7A8099;margin-bottom:48px}
+    .section-label{font-family:'Space Mono',monospace;font-size:11px;color:#C9A84C;letter-spacing:.15em;text-transform:uppercase;margin-bottom:16px}
+    .latest-card{background:linear-gradient(135deg,#1A1608 0%,#13161E 60%);border:1px solid #C9A84C44;border-radius:16px;padding:28px 32px;margin-bottom:48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+    .latest-card .week{font-family:'Playfair Display',serif;font-size:28px;color:#F0EDE6;margin-bottom:6px}
+    .latest-card .meta{font-size:13px;color:#7A8099}
+    .fy-badge{font-family:'Space Mono',monospace;font-size:10px;color:#C9A84C;background:#C9A84C15;border:1px solid #C9A84C33;border-radius:6px;padding:3px 10px;display:inline-block;margin-bottom:8px}
+    .btn{display:inline-flex;align-items:center;background:#C9A84C;color:#0D0F14;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px 22px;border-radius:99px;text-decoration:none;white-space:nowrap}
+    .btn:hover{background:#E8C97A}
+    .archive-list{display:flex;flex-direction:column;gap:10px}
+    .archive-item{background:#13161E;border:1px solid #1E2330;border-radius:12px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    .archive-item:hover{border-color:#C9A84C66}
+    .archive-item.year-end{border-color:#C9A84C44;background:linear-gradient(135deg,#1A1608 0%,#13161E 60%)}
+    .archive-item.new-fy{border-color:#C9A84C44}
+    .archive-item .date{font-size:15px;color:#F0EDE6;font-weight:500;margin-bottom:4px}
+    .tag{font-family:'Space Mono',monospace;font-size:10px;padding:3px 10px;border-radius:99px;font-weight:600}
+    .tag-on{background:#4CAF8222;color:#4CAF82;border:1px solid #4CAF8244}
+    .tag-watch{background:#E8A84C22;color:#E8A84C;border:1px solid #E8A84C44}
+    .tag-below{background:#E85C5C22;color:#E85C5C;border:1px solid #E85C5C44}
+    .tag-yearend{background:#C9A84C22;color:#C9A84C;border:1px solid #C9A84C44}
+    .stats{display:flex;gap:24px;flex-wrap:wrap}
+    .stat-item{text-align:right}
+    .stat-item .val{font-family:'Space Mono',monospace;font-size:13px;color:#F0EDE6}
+    .stat-item .lbl{font-size:10px;color:#4A5168;margin-top:1px}
+    .btn-sm{display:inline-flex;align-items:center;background:transparent;color:#C9A84C;border:1px solid #C9A84C44;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 16px;border-radius:99px;text-decoration:none;white-space:nowrap}
+    .btn-sm:hover{background:#C9A84C15;border-color:#C9A84C}
+    .divider{border:none;border-top:1px solid #1E2330;margin:36px 0}
+    footer{margin-top:64px;text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:#4A5168}
+  </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState } = React;
+  <div class="container">
+    <div class="eyebrow">Evangelical Free Church of Australia · 澳洲基督教播道會靈福堂</div>
+    <h1>Weekly Bulletin Dashboards</h1>
+    <p class="subtitle">Attendance and offertory statistics, extracted from the weekly bulletin.</p>
 
-const gold="#C9A84C", goldLight="#E8C97A", goldDim="#7A6128", bg="#0D0F14", card="#13161E",
-      cardBorder="#1E2330", textPrimary="#F0EDE6", textMuted="#7A8099", textDim="#4A5168",
-      green="#4CAF82", amber="#E8A84C", red="#E85C5C";
-
-const data = {
-  date: "27 September 2026",
-  bulletinDate: "4 October 2026",
-  etransferPeriod: "21–27 September 2026",
-  attendance: [
-    { label: "8:45am · 早堂", count: 152, color: gold, paused: false },
-    { label: "10:30am · 二堂", count: 250, color: gold, paused: false },
-    { label: "12:15pm · 三堂", count: 65, color: gold, paused: false },
-    { label: "English Ministry · 英語堂", count: 124, color: goldLight, paused: false },
-    { label: "Youth Ministry · 青少年", count: null, color: "#8CC9E8", paused: true },
-    { label: "Mandarin Ministry · 國語堂", count: 61, color: "#E88CC9", paused: false },
-  ],
-  childrenNote: "This week's bulletin reports children's attendance as a combined Cantonese-service figure rather than split by service time.",
-  children: [
-    { label: "Cantonese (combined) · 粵語堂", count: 27 },
-    { label: "English · 英語", count: 8 },
-    { label: "Mandarin · 國語", count: 1 },
-  ],
-  funds: [
-    { fund: "General Fund", zh: "常費", cash: { s845: 1916.00, s1030_1215: 2653.05, eng: 763.15, mand: 918.00 },
-      etransfer: { cant: 12857.20, eng: 2565.00, youth: 150.00, mand: 50.00 } },
-    { fund: "Mission Fund", zh: "宣教基金", cash: { s845: 200.00, mand: 20.00 },
-      etransfer: { cant: 700.00, eng: 345.00 } },
-    { fund: "Building Fund", zh: "建堂基金", cash: { s1030_1215: 620.00 },
-      etransfer: { cant: 40.00 } },
-    { fund: "Welfare Fund", zh: "慈惠基金", cash: { s1030_1215: 50.00 },
-      etransfer: { cant: 10.00 } },
-    { fund: "Seminary Student Fund", zh: "神學生基金", cash: {},
-      etransfer: { cant: 10.00 } },
-    { fund: "Lunch Income", zh: "午餐收入", cash: { eng: 170.00 },
-      etransfer: { eng: 1259.00 } },
-    { fund: "Youth Camp", zh: "青年營", cash: {},
-      etransfer: { youth: 440.00 } },
-  ],
-  ytd: {
-    generalFund: { annualTarget: 1784177, weeklyTarget: 34312, cumTarget: 446044, actual: 364912 },
-    missionFund: { annualTarget: 160000, cumTarget: 40000, actual: 20931 }
-  }
-};
-
-const fmt = (n) => (n == null ? "—" : "$" + n.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-const fmtK = (n) => {
-  if (n == null) return "—";
-  if (Math.abs(n) >= 1000000) return "$" + (n / 1000000).toFixed(2) + "M";
-  if (Math.abs(n) >= 1000) return "$" + (n / 1000).toFixed(1) + "K";
-  return "$" + n.toFixed(0);
-};
-const sumV = (...vals) => vals.reduce((s, v) => s + (v || 0), 0);
-
-const fundsWithTotals = data.funds.map(f => {
-  const cashVals = [f.cash.s845, f.cash.s1030_1215, f.cash.eng, f.cash.mand];
-  const etVals = [f.etransfer.cant, f.etransfer.eng, f.etransfer.youth, f.etransfer.mand];
-  const cashTotal = sumV(...cashVals);
-  const etTotal = sumV(...etVals);
-  return { ...f, cashVals, etVals, cashTotal, etTotal, grandTotal: cashTotal + etTotal };
-});
-
-const totalCash = sumV(...fundsWithTotals.map(f => f.cashTotal));
-const totalET = sumV(...fundsWithTotals.map(f => f.etTotal));
-const totalAttendance = sumV(...data.attendance.map(a => a.count));
-const totalChildren = sumV(...data.children.map(c => c.count));
-
-const gfWeek = fundsWithTotals.find(f => f.fund === "General Fund");
-const gfWeekTotal = gfWeek.grandTotal;
-const gfWeekPct = Math.round((gfWeekTotal / data.ytd.generalFund.weeklyTarget) * 100);
-const gfYtdPct = Math.round((data.ytd.generalFund.actual / data.ytd.generalFund.cumTarget) * 100);
-const missionYtdPct = Math.round((data.ytd.missionFund.actual / data.ytd.missionFund.cumTarget) * 100);
-
-function statusOf(pct) {
-  if (pct >= 100) return { label: "On Target", color: green, icon: "✅" };
-  if (pct >= 75) return { label: "Watch", color: amber, icon: "⚠️" };
-  return { label: "Below Target", color: red, icon: "🔴" };
-}
-const gfWeekStatus = statusOf(gfWeekPct);
-const gfYtdStatus = statusOf(gfYtdPct);
-const missionYtdStatus = statusOf(missionYtdPct);
-
-function ProgressBar({ value, max, color, thin }) {
-  const pct = Math.min(100, Math.max(0, (value / max) * 100));
-  return (
-    <div style={{ width: "100%", height: thin ? 6 : 10, background: "#1A1E29", borderRadius: 6, overflow: "hidden" }}>
-      <div style={{ width: pct + "%", height: "100%", background: color, borderRadius: 6, transition: "width 0.6s ease" }} />
+    <div class="section-label">Latest Week · 最新一週</div>
+    <div class="latest-card">
+      <div>
+        <div class="fy-badge">FY2026/27 · WEEK 13</div>
+        <div class="week">27 September 2026</div>
+        <div class="meta">Bulletin dated 4 October 2026 (Communion Sunday) &nbsp;·&nbsp; Total attendance: 652 &nbsp;·&nbsp; Weekly GF: $21,872 <span style="color:#E85C5C">🔴 Below Target</span></div>
+      </div>
+      <a href="church-dashboard-20260927.html" class="btn">↗ Open Dashboard</a>
     </div>
-  );
-}
 
-function Card({ children, style }) {
-  return (
-    <div style={{ background: card, border: `1px solid ${cardBorder}`, borderRadius: 14, padding: 24, ...style }}>
-      {children}
-    </div>
-  );
-}
+    <div class="section-label">All Weeks · 所有週次</div>
+    <div class="archive-list">
 
-function SectionLabel({ children }) {
-  return (
-    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 2, color: gold, textTransform: "uppercase", marginBottom: 14 }}>
-      {children}
-    </div>
-  );
-}
-
-function StatBig({ label, zh, value, sub, color }) {
-  return (
-    <div>
-      <div style={{ fontSize: 13, color: textMuted, marginBottom: 4 }}>{label}{zh ? <span style={{ color: textDim }}> · {zh}</span> : null}</div>
-      <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 32, fontWeight: 700, color: color || textPrimary }}>{value}</div>
-      {sub && <div style={{ fontSize: 12, color: textDim, marginTop: 2 }}>{sub}</div>}
-    </div>
-  );
-}
-
-function Dashboard() {
-  const [tab, setTab] = useState("cash");
-
-  const cashHeader = ["Fund · 基金", "8:45am", "10:30am & 12:15pm (combined)", "English · 英語", "Mandarin · 國語", "Cash Total · 現金合計"];
-  const cashColTotals = [0, 1, 2, 3].map(i => sumV(...fundsWithTotals.map(f => f.cashVals[i])));
-
-  const etHeader = ["Fund · 基金", "Cantonese · 粵語", "English · 英語", "Youth · 青少年", "Mandarin · 國語", "E-Transfer Total · 電轉合計"];
-  const etColTotals = [0, 1, 2, 3].map(i => sumV(...fundsWithTotals.map(f => f.etVals[i])));
-
-  return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 24px 80px" }}>
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 32, flexWrap: "wrap", gap: 16 }}>
-        <div>
-          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: textMuted, letterSpacing: 1, marginBottom: 6 }}>
-            澳洲基督教播道會靈福堂 · EFCA
-          </div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 40, fontWeight: 700, color: textPrimary }}>
-            Sunday, {data.date}
-          </h1>
-          <div style={{ fontSize: 13, color: textMuted, marginTop: 4 }}>
-            Bulletin published {data.bulletinDate} · E-Transfer period {data.etransferPeriod}
-          </div>
+      <div class="archive-item new-fy">
+        <div><div class="date">27 September 2026</div><span class="tag tag-below">🔴 Below Target</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK13</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">652</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$21,872</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">64%</div><div class="lbl">vs Weekly Target · 目標</div></div>
+          <div class="stat-item"><div class="val">$364.9K</div><div class="lbl">FY GF YTD · 累積</div></div>
         </div>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <span style={{ background: "rgba(201,168,76,0.12)", border: `1px solid ${goldDim}`, color: gold, fontFamily: "'Space Mono', monospace", fontSize: 12, padding: "6px 14px", borderRadius: 20 }}>
-            FY2026/27 · Week 13
-          </span>
-        </div>
+        <a href="church-dashboard-20260927.html" class="btn-sm">↗ View</a>
       </div>
 
-      {/* KPI Row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
-        <Card><StatBig label="Total Attendance" zh="總出席人數" value={totalAttendance} sub="Youth Ministry paused (school holidays)" /></Card>
-        <Card><StatBig label="Children's Ministry" zh="兒童事工" value={totalChildren} /></Card>
-        <Card><StatBig label="Total Cash Offertory" zh="現金奉獻總額" value={fmtK(totalCash)} /></Card>
-        <Card><StatBig label="Total E-Transfer" zh="電轉奉獻總額" value={fmtK(totalET)} /></Card>
+      <div class="archive-item new-fy">
+        <div><div class="date">20 September 2026</div><span class="tag tag-watch">⚠ Watch</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK12</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">786</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$26,374</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">77%</div><div class="lbl">vs Weekly Target · 目標</div></div>
+          <div class="stat-item"><div class="val">$343.0K</div><div class="lbl">FY GF YTD · 累積</div></div>
+        </div>
+        <a href="church-dashboard-20260920.html" class="btn-sm">↗ View</a>
       </div>
 
-      {/* Attendance */}
-      <Card style={{ marginBottom: 24 }}>
-        <SectionLabel>Attendance · 崇拜人數</SectionLabel>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
-          {data.attendance.map((a, i) => (
-            <div key={i}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                <span style={{ fontSize: 14, color: textPrimary }}>{a.label}</span>
-                {a.paused ? (
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: textDim }}>Paused · 學校假期</span>
-                ) : (
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: a.color, fontWeight: 700 }}>{a.count}</span>
-                )}
-              </div>
-              {a.paused ? (
-                <div style={{ width: "100%", height: 6, background: "#1A1E29", borderRadius: 6 }} />
-              ) : (
-                <ProgressBar value={a.count} max={260} color={a.color} thin />
-              )}
-            </div>
-          ))}
+      <div class="archive-item new-fy">
+        <div><div class="date">13 September 2026</div><span class="tag tag-below">🔴 Below Target</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK11</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">745</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$25,174</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">73%</div><div class="lbl">vs Weekly Target · 目標</div></div>
+          <div class="stat-item"><div class="val">$320.1K</div><div class="lbl">FY GF YTD · 累積</div></div>
         </div>
-        <div style={{ marginTop: 20, paddingTop: 16, borderTop: `1px solid ${cardBorder}` }}>
-          <div style={{ display: "flex", gap: 32, flexWrap: "wrap", marginBottom: 8 }}>
-            {data.children.map((c, i) => (
-              <div key={i} style={{ fontSize: 13, color: textMuted }}>
-                {c.label}: <span style={{ color: textPrimary, fontWeight: 700 }}>{c.count}</span>
-              </div>
-            ))}
-            <div style={{ fontSize: 13, color: textMuted }}>
-              Children's Total: <span style={{ color: goldLight, fontWeight: 700 }}>{totalChildren}</span>
-            </div>
-          </div>
-          <div style={{ fontSize: 11, color: textDim }}>{data.childrenNote}</div>
-        </div>
-      </Card>
-
-      {/* Offertory */}
-      <Card style={{ marginBottom: 24 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-          <SectionLabel>Offertory · 奉獻</SectionLabel>
-          <div style={{ display: "flex", gap: 4, background: "#0D0F14", padding: 4, borderRadius: 10 }}>
-            {["cash", "etransfer", "combined"].map(t => (
-              <button key={t} onClick={() => setTab(t)} style={{
-                background: tab === t ? gold : "transparent",
-                color: tab === t ? "#0D0F14" : textMuted,
-                border: "none", borderRadius: 8, padding: "6px 16px", fontSize: 13, fontFamily: "'DM Sans', sans-serif",
-                fontWeight: tab === t ? 700 : 400, cursor: "pointer", transition: "all 0.2s"
-              }}>
-                {t === "cash" ? "Cash" : t === "etransfer" ? "E-Transfer" : "Combined"}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {tab === "cash" && (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-              <thead>
-                <tr>{cashHeader.map((h, i) => (
-                  <th key={i} style={{ textAlign: i === 0 ? "left" : "right", padding: "8px 10px", color: textMuted, fontWeight: 500, borderBottom: `1px solid ${cardBorder}`, whiteSpace: "nowrap" }}>{h}</th>
-                ))}</tr>
-              </thead>
-              <tbody>
-                {fundsWithTotals.map((f, i) => (
-                  <tr key={i}>
-                    <td style={{ padding: "10px", color: textPrimary }}>{f.fund} <span style={{ color: textDim }}>· {f.zh}</span></td>
-                    {f.cashVals.map((v, j) => (
-                      <td key={j} style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: v == null ? textDim : textPrimary }}>{fmt(v)}</td>
-                    ))}
-                    <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: goldLight, fontWeight: 700 }}>{fmt(f.cashTotal)}</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr style={{ borderTop: `2px solid ${cardBorder}` }}>
-                  <td style={{ padding: "12px 10px", color: gold, fontWeight: 700 }}>Column Total · 合計</td>
-                  {cashColTotals.map((v, j) => (
-                    <td key={j} style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(v)}</td>
-                  ))}
-                  <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(totalCash)}</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        )}
-
-        {tab === "etransfer" && (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-              <thead>
-                <tr>{etHeader.map((h, i) => (
-                  <th key={i} style={{ textAlign: i === 0 ? "left" : "right", padding: "8px 10px", color: textMuted, fontWeight: 500, borderBottom: `1px solid ${cardBorder}`, whiteSpace: "nowrap" }}>{h}</th>
-                ))}</tr>
-              </thead>
-              <tbody>
-                {fundsWithTotals.map((f, i) => (
-                  <tr key={i}>
-                    <td style={{ padding: "10px", color: textPrimary }}>{f.fund} <span style={{ color: textDim }}>· {f.zh}</span></td>
-                    {f.etVals.map((v, j) => (
-                      <td key={j} style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: v == null ? textDim : textPrimary }}>{fmt(v)}</td>
-                    ))}
-                    <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: goldLight, fontWeight: 700 }}>{fmt(f.etTotal)}</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr style={{ borderTop: `2px solid ${cardBorder}` }}>
-                  <td style={{ padding: "12px 10px", color: gold, fontWeight: 700 }}>Column Total · 合計</td>
-                  {etColTotals.map((v, j) => (
-                    <td key={j} style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(v)}</td>
-                  ))}
-                  <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(totalET)}</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        )}
-
-        {tab === "combined" && (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: "left", padding: "8px 10px", color: textMuted, fontWeight: 500, borderBottom: `1px solid ${cardBorder}` }}>Fund · 基金</th>
-                  <th style={{ textAlign: "right", padding: "8px 10px", color: textMuted, fontWeight: 500, borderBottom: `1px solid ${cardBorder}` }}>Cash · 現金</th>
-                  <th style={{ textAlign: "right", padding: "8px 10px", color: textMuted, fontWeight: 500, borderBottom: `1px solid ${cardBorder}` }}>E-Transfer · 電轉</th>
-                  <th style={{ textAlign: "right", padding: "8px 10px", color: textMuted, fontWeight: 500, borderBottom: `1px solid ${cardBorder}` }}>Total · 合計</th>
-                </tr>
-              </thead>
-              <tbody>
-                {fundsWithTotals.map((f, i) => (
-                  <tr key={i}>
-                    <td style={{ padding: "10px", color: textPrimary }}>{f.fund} <span style={{ color: textDim }}>· {f.zh}</span></td>
-                    <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: textPrimary }}>{fmt(f.cashTotal)}</td>
-                    <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: textPrimary }}>{fmt(f.etTotal)}</td>
-                    <td style={{ padding: "10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: goldLight, fontWeight: 700 }}>{fmt(f.grandTotal)}</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr style={{ borderTop: `2px solid ${cardBorder}` }}>
-                  <td style={{ padding: "12px 10px", color: gold, fontWeight: 700 }}>Grand Total · 總計</td>
-                  <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(totalCash)}</td>
-                  <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(totalET)}</td>
-                  <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "'Space Mono', monospace", color: gold, fontWeight: 700 }}>{fmt(totalCash + totalET)}</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        )}
-      </Card>
-
-      {/* YTD */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))", gap: 24 }}>
-        <Card>
-          <SectionLabel>General Fund · 常費基金 — YTD FY2026/27</SectionLabel>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
-            <div style={{ fontSize: 13, color: textMuted }}>This Week vs Weekly Target</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span>{gfWeekStatus.icon}</span>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: gfWeekStatus.color, fontWeight: 700 }}>{gfWeekPct}% · {gfWeekStatus.label}</span>
-            </div>
-          </div>
-          <ProgressBar value={gfWeekTotal} max={data.ytd.generalFund.weeklyTarget} color={gfWeekStatus.color} />
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: textDim, marginTop: 6, marginBottom: 22 }}>
-            <span>{fmtK(gfWeekTotal)} received</span>
-            <span>Target: {fmtK(data.ytd.generalFund.weeklyTarget)}/wk</span>
-          </div>
-
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
-            <div style={{ fontSize: 13, color: textMuted }}>Full-Year Cumulative Progress</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span>{gfYtdStatus.icon}</span>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: gfYtdStatus.color, fontWeight: 700 }}>{gfYtdPct}% · {gfYtdStatus.label}</span>
-            </div>
-          </div>
-          <ProgressBar value={data.ytd.generalFund.actual} max={data.ytd.generalFund.cumTarget} color={gfYtdStatus.color} />
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: textDim, marginTop: 6 }}>
-            <span>{fmtK(data.ytd.generalFund.actual)} actual</span>
-            <span>Target to date: {fmtK(data.ytd.generalFund.cumTarget)}</span>
-          </div>
-          <div style={{ fontSize: 12, color: red, marginTop: 4 }}>
-            Shortfall: {fmtK(data.ytd.generalFund.actual - data.ytd.generalFund.cumTarget)}
-          </div>
-          <div style={{ fontSize: 11, color: textDim, marginTop: 14, paddingTop: 12, borderTop: `1px solid ${cardBorder}` }}>
-            Annual Target: {fmtK(data.ytd.generalFund.annualTarget)}
-          </div>
-        </Card>
-
-        <Card>
-          <SectionLabel>Mission Fund · 宣教基金 — YTD FY2026/27</SectionLabel>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
-            <div style={{ fontSize: 13, color: textMuted }}>Full-Year Cumulative Progress</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span>{missionYtdStatus.icon}</span>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: missionYtdStatus.color, fontWeight: 700 }}>{missionYtdPct}% · {missionYtdStatus.label}</span>
-            </div>
-          </div>
-          <ProgressBar value={data.ytd.missionFund.actual} max={data.ytd.missionFund.cumTarget} color={missionYtdStatus.color} />
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: textDim, marginTop: 6 }}>
-            <span>{fmtK(data.ytd.missionFund.actual)} actual</span>
-            <span>Target to date: {fmtK(data.ytd.missionFund.cumTarget)}</span>
-          </div>
-          <div style={{ fontSize: 12, color: red, marginTop: 4 }}>
-            Shortfall: {fmtK(data.ytd.missionFund.actual - data.ytd.missionFund.cumTarget)}
-          </div>
-          <div style={{ fontSize: 11, color: textDim, marginTop: 14, paddingTop: 12, borderTop: `1px solid ${cardBorder}` }}>
-            Annual Target: {fmtK(data.ytd.missionFund.annualTarget)}
-          </div>
-        </Card>
+        <a href="church-dashboard-20260913.html" class="btn-sm">↗ View</a>
       </div>
 
-      <div style={{ textAlign: "center", marginTop: 40, fontSize: 12, color: textDim }}>
-        澳洲基督教播道會靈福堂 · Evangelical Free Church of Australia — Ling Fook Church
+      <div class="archive-item new-fy">
+        <div><div class="date">6 September 2026</div><span class="tag tag-on">✓ On Target</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK10</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">865</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$34,016</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">99%</div><div class="lbl">vs Weekly Target · 目標</div></div>
+        </div>
+        <a href="church-dashboard-20260906.html" class="btn-sm">↗ View</a>
       </div>
+
+      <div class="archive-item new-fy">
+        <div><div class="date">30 August 2026</div><span class="tag tag-below">🔴 Below Target</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK9</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">749</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$21,227</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">62%</div><div class="lbl">vs Weekly Target · 目標</div></div>
+        </div>
+        <a href="church-dashboard-20260830.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item new-fy">
+        <div><div class="date">23 August 2026</div><span class="tag tag-watch">⚠ Watch</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK8</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">591</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$28,597</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">83%</div><div class="lbl">vs Weekly Target · 目標</div></div>
+        </div>
+        <a href="church-dashboard-20260823.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item new-fy">
+        <div><div class="date">16 August 2026</div><span class="tag tag-watch">⚠ Watch</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK7</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">774</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$31,456</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">92%</div><div class="lbl">vs Weekly Target · 目標</div></div>
+        </div>
+        <a href="church-dashboard-20260816.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item new-fy">
+        <div><div class="date">9 August 2026</div><span class="tag tag-watch">⚠ Watch</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK6</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">747</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$29,961</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">87%</div><div class="lbl">vs Weekly Target · 目標</div></div>
+        </div>
+        <a href="church-dashboard-20260809.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item new-fy">
+        <div><div class="date">2 August 2026</div><span class="tag tag-watch">⚠ Watch</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK5</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">756</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$30,516</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">89%</div><div class="lbl">vs Weekly Target · 目標</div></div>
+        </div>
+        <a href="church-dashboard-20260802.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item new-fy">
+        <div><div class="date">26 July 2026</div><span class="tag tag-below">🔴 Below Target</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK4</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">710</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$22,897</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">67%</div><div class="lbl">vs Weekly Target · 目標</div></div>
+        </div>
+        <a href="church-dashboard-20260726.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item new-fy">
+        <div><div class="date">19 July 2026</div><span class="tag tag-watch">⚠ Watch</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK3</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">687</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$30,239</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">88%</div><div class="lbl">vs Weekly Target · 目標</div></div>
+        </div>
+        <a href="church-dashboard-20260719.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item new-fy">
+        <div><div class="date">12 July 2026</div><span class="tag tag-on">✓ On Target</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK2</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">675</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$41,218</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">125%</div><div class="lbl">vs Weekly Target · 目標</div></div>
+        </div>
+        <a href="church-dashboard-20260712.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item new-fy">
+        <div><div class="date">5 July 2026</div><span class="tag tag-below">🔴 Below Target</span><span style="margin-left:6px;font-size:10px;color:#C9A84C;font-family:'Space Mono',monospace">FY26/27 WK1</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">715</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$21,289</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">65%</div><div class="lbl">vs Target · 目標</div></div>
+        </div>
+        <a href="church-dashboard-20260705.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item year-end">
+        <div><div class="date">28 June 2026</div><span class="tag tag-yearend">🎉 Year-End FY25/26</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">803</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$1.95M</div><div class="lbl">Full-Year GF · 全年</div></div>
+          <div class="stat-item"><div class="val">114%</div><div class="lbl">of Annual Target · 目標</div></div>
+        </div>
+        <a href="church-dashboard-20260628.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item">
+        <div><div class="date">21 June 2026</div><span class="tag tag-watch">⚠ Watch</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">758</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$28,392</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">86%</div><div class="lbl">vs Target · 目標</div></div>
+          <div class="stat-item"><div class="val">$1.93M</div><div class="lbl">YTD GF · 累積</div></div>
+        </div>
+        <a href="church-dashboard-20260621.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item">
+        <div><div class="date">14 June 2026</div><span class="tag tag-on">✓ On Target</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">729</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$42,641</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">129%</div><div class="lbl">vs Target · 目標</div></div>
+          <div class="stat-item"><div class="val">$1.90M</div><div class="lbl">YTD GF · 累積</div></div>
+        </div>
+        <a href="church-dashboard-20260614.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item">
+        <div><div class="date">7 June 2026</div><span class="tag tag-on">✓ On Target</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">726</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$38,691</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">117%</div><div class="lbl">vs Target · 目標</div></div>
+          <div class="stat-item"><div class="val">$1.86M</div><div class="lbl">YTD GF · 累積</div></div>
+        </div>
+        <a href="church-dashboard-20260607.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item">
+        <div><div class="date">31 May 2026</div><span class="tag tag-below">🔴 Below Target</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">790</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$21,013</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">64%</div><div class="lbl">vs Target · 目標</div></div>
+          <div class="stat-item"><div class="val">$1.82M</div><div class="lbl">YTD GF · 累積</div></div>
+        </div>
+        <a href="church-dashboard-20260531.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item">
+        <div><div class="date">24 May 2026</div><span class="tag tag-watch">⚠ Watch</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">746</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$28,167</div><div class="lbl">Weekly GF · 経常費</div></div>
+          <div class="stat-item"><div class="val">85%</div><div class="lbl">vs Target · 目標</div></div>
+          <div class="stat-item"><div class="val">$1.80M</div><div class="lbl">YTD GF · 累積</div></div>
+        </div>
+        <a href="church-dashboard-20260524.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item">
+        <div><div class="date">17 May 2026</div><span class="tag tag-watch">⚠ Watch</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">747</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$22,172</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">67%</div><div class="lbl">vs Target · 目標</div></div>
+          <div class="stat-item"><div class="val">$1.77M</div><div class="lbl">YTD GF · 累積</div></div>
+        </div>
+        <a href="church-dashboard-20260517.html" class="btn-sm">↗ View</a>
+      </div>
+
+      <div class="archive-item">
+        <div><div class="date">10 May 2026</div><span class="tag tag-on">✓ On Target</span></div>
+        <div class="stats">
+          <div class="stat-item"><div class="val">807</div><div class="lbl">Attendance · 出席</div></div>
+          <div class="stat-item"><div class="val">$39,069</div><div class="lbl">Weekly GF · 經常費</div></div>
+          <div class="stat-item"><div class="val">119%</div><div class="lbl">vs Target · 目標</div></div>
+          <div class="stat-item"><div class="val">$1.75M</div><div class="lbl">YTD GF · 累積</div></div>
+        </div>
+        <a href="church-dashboard-20260510.html" class="btn-sm">↗ View</a>
+      </div>
+
     </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(<Dashboard />);
-</script>
+    <hr class="divider" />
+    <footer>EFCA · 澳洲基督教播道會靈福堂 · 518 Pacific Highway, Lane Cove North NSW 2066 · office@efca.org.au</footer>
+  </div>
 </body>
 </html>
