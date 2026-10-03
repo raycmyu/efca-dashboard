@@ -36,6 +36,20 @@
     .stat-item .lbl{font-size:10px;color:#4A5168;margin-top:1px}
     .btn-sm{display:inline-flex;align-items:center;background:transparent;color:#C9A84C;border:1px solid #C9A84C44;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 16px;border-radius:99px;text-decoration:none;white-space:nowrap}
     .btn-sm:hover{background:#C9A84C15;border-color:#C9A84C}
+    .charts{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:48px}
+    .chart-card{background:#13161E;border:1px solid #1E2330;border-radius:14px;padding:20px 22px 18px;min-width:0}
+    .chart-card.wide{grid-column:1/-1}
+    .chart-title{font-size:15px;font-weight:500;color:#F0EDE6;margin-bottom:2px}
+    .chart-title .zh{color:#4A5168;font-weight:400}
+    .chart-sub{font-size:12px;color:#7A8099;margin-bottom:14px;min-height:16px}
+    .chart-box{position:relative;height:260px}
+    .chart-card.wide .chart-box{height:300px}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font-size:11px;color:#7A8099}
+    .legend span{display:inline-flex;align-items:center;gap:6px}
+    .legend i{display:inline-block;width:10px;height:10px;border-radius:2px}
+    .legend i.dash{width:16px;height:0;border-top:2px dashed #C9A84C;border-radius:0}
+    .chart-note{font-size:10px;color:#4A5168;margin-top:10px;line-height:1.5}
+    @media(max-width:700px){.charts{grid-template-columns:1fr}.chart-card.wide .chart-box,.chart-box{height:240px}}
     .divider{border:none;border-top:1px solid #1E2330;margin:36px 0}
     footer{margin-top:64px;text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:#4A5168}
   </style>
@@ -54,6 +68,36 @@
         <div class="meta">Bulletin dated 4 October 2026 (Communion Sunday) &nbsp;·&nbsp; Total attendance: 652 &nbsp;·&nbsp; Weekly GF: $21,872 <span style="color:#E85C5C">🔴 Below Target</span></div>
       </div>
       <a href="church-dashboard-20260927.html" class="btn">↗ Open Dashboard</a>
+    </div>
+
+    <div class="section-label">Trends · 趨勢</div>
+    <div class="charts">
+      <div class="chart-card wide">
+        <div class="chart-title">Weekly General Fund vs Target <span class="zh">· 每週經常費 vs 目標</span></div>
+        <div class="chart-sub" id="sub-weekly"></div>
+        <div class="chart-box"><canvas id="chart-weekly" role="img" aria-label="Bar chart of weekly General Fund offertory against the weekly target, coloured by status"></canvas></div>
+        <div class="legend">
+          <span><i style="background:#4CAF82"></i>On Target (≥100%)</span>
+          <span><i style="background:#E8A84C"></i>Watch (75–99%)</span>
+          <span><i style="background:#E85C5C"></i>Below Target (&lt;75%)</span>
+          <span><i class="dash"></i>Weekly target</span>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Cumulative General Fund <span class="zh">· 累積經常費</span></div>
+        <div class="chart-sub" id="sub-cum"></div>
+        <div class="chart-box"><canvas id="chart-cum" role="img" aria-label="Line chart of cumulative General Fund actual against cumulative target for the current financial year"></canvas></div>
+        <div class="legend"><span><i style="background:#C9A84C"></i>Actual</span><span><i class="dash"></i>Target to date</span></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Weekly Attendance <span class="zh">· 每週出席人數</span></div>
+        <div class="chart-sub" id="sub-att"></div>
+        <div class="chart-box"><canvas id="chart-att" role="img" aria-label="Line chart of total weekly attendance"></canvas></div>
+        <div class="legend"><span><i style="background:#C9A84C"></i>Total attendance (all services)</span></div>
+      </div>
+      <div class="chart-note wide" style="grid-column:1/-1">
+        Weekly GF = cash + e-transfer for that Sunday. Dashed divider marks the start of FY2026/27. For the first two weeks of FY26/27 the weekly target was a prior-year placeholder ($32,960) until the new budget was confirmed; cumulative targets are shown on the confirmed $34,312/week basis. Attendance excludes paused services (e.g. Youth Ministry during school holidays).
+      </div>
     </div>
 
     <div class="section-label">All Weeks · 所有週次</div>
@@ -283,5 +327,146 @@
     <hr class="divider" />
     <footer>EFCA · 澳洲基督教播道會靈福堂 · 518 Pacific Highway, Lane Cove North NSW 2066 · office@efca.org.au</footer>
   </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script>
+    // ── Chart data ── append ONE row per new week (oldest first) ──────────────
+    // d: Sunday date · att: total attendance · gf: weekly GF (cash + e-transfer)
+    // tgt: weekly GF target · fy: financial year · cumA/cumT: FY cumulative actual / target to date
+    const WEEKS = [
+      {d:"10 May", att:807, gf:39069,    tgt:32960, fy:"25/26"},
+      {d:"17 May", att:747, gf:22172,    tgt:32960, fy:"25/26"},
+      {d:"24 May", att:746, gf:28167,    tgt:32960, fy:"25/26"},
+      {d:"31 May", att:790, gf:21013,    tgt:32960, fy:"25/26"},
+      {d:"7 Jun",  att:726, gf:38691,    tgt:32960, fy:"25/26"},
+      {d:"14 Jun", att:729, gf:42641,    tgt:32960, fy:"25/26"},
+      {d:"21 Jun", att:758, gf:28392,    tgt:32960, fy:"25/26"},
+      {d:"28 Jun", att:803, gf:21625.11, tgt:32960, fy:"25/26"},
+      {d:"5 Jul",  att:715, gf:21289,    tgt:32960, fy:"26/27", cumA:21289,  cumT:34312},
+      {d:"12 Jul", att:675, gf:41218,    tgt:32960, fy:"26/27", cumA:62508,  cumT:68624},
+      {d:"19 Jul", att:687, gf:30239,    tgt:34312, fy:"26/27", cumA:92547,  cumT:102933},
+      {d:"26 Jul", att:710, gf:22897,    tgt:34312, fy:"26/27", cumA:117834, cumT:137244},
+      {d:"2 Aug",  att:756, gf:30516,    tgt:34312, fy:"26/27", cumA:148350, cumT:171555},
+      {d:"9 Aug",  att:747, gf:29961,    tgt:34312, fy:"26/27", cumA:178363, cumT:205867},
+      {d:"16 Aug", att:774, gf:31456,    tgt:34312, fy:"26/27", cumA:211042, cumT:240178},
+      {d:"23 Aug", att:591, gf:28597,    tgt:34312, fy:"26/27", cumA:239639, cumT:274489},
+      {d:"30 Aug", att:749, gf:21227,    tgt:34312, fy:"26/27", cumA:260865, cumT:308800},
+      {d:"6 Sep",  att:865, gf:34016,    tgt:34312, fy:"26/27", cumA:294881, cumT:343111},
+      {d:"13 Sep", att:745, gf:25174,    tgt:34312, fy:"26/27", cumA:320055, cumT:377422},
+      {d:"20 Sep", att:786, gf:26374,    tgt:34312, fy:"26/27", cumA:343039, cumT:411733},
+      {d:"27 Sep", att:652, gf:21872,    tgt:34312, fy:"26/27", cumA:364912, cumT:446044},
+    ];
+
+    const C = {gold:"#C9A84C", green:"#4CAF82", amber:"#E8A84C", red:"#E85C5C", muted:"#7A8099", grid:"#1E2330", text:"#F0EDE6"};
+    const money = n => "$" + Math.round(n).toLocaleString("en-AU");
+    const moneyK = n => (n < 0 ? "−" : "") + "$" + (Math.abs(n) / 1000).toFixed(1) + "K";
+    const pct = w => w.gf / w.tgt * 100;
+    const statusColor = p => p >= 100 ? C.green : p >= 75 ? C.amber : C.red;
+    const statusName = p => p >= 100 ? "On Target" : p >= 75 ? "Watch" : "Below Target";
+
+    Chart.defaults.color = C.muted;
+    Chart.defaults.font.family = "'DM Sans', sans-serif";
+    Chart.defaults.font.size = 11;
+    Chart.defaults.borderColor = C.grid;
+
+    const tooltipBase = {backgroundColor:"#0D0F14", borderColor:"#2E3448", borderWidth:1, titleColor:C.text, bodyColor:"#C9CBD6", padding:10, displayColors:false};
+
+    // Dashed vertical divider where the financial year changes
+    const fyDivider = {
+      id: "fyDivider",
+      afterDatasetsDraw(chart) {
+        const i = WEEKS.findIndex(w => w.fy === "26/27");
+        if (i <= 0) return;
+        const {ctx, chartArea, scales} = chart;
+        const x = (scales.x.getPixelForValue(i - 1) + scales.x.getPixelForValue(i)) / 2;
+        ctx.save();
+        ctx.setLineDash([4, 4]); ctx.strokeStyle = "#4A5168"; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, chartArea.top); ctx.lineTo(x, chartArea.bottom); ctx.stroke();
+        ctx.setLineDash([]); ctx.fillStyle = "#4A5168"; ctx.font = "10px 'Space Mono', monospace";
+        ctx.fillText("FY26/27 →", x + 6, chartArea.top + 10);
+        ctx.restore();
+      }
+    };
+
+    const labels = WEEKS.map(w => w.d);
+    const xAxis = {grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, autoSkipPadding:12}};
+
+    // 1 · Weekly GF vs target
+    new Chart(document.getElementById("chart-weekly"), {
+      data: {
+        labels,
+        datasets: [
+          {type:"bar", label:"Weekly GF", data:WEEKS.map(w => w.gf), backgroundColor:WEEKS.map(w => statusColor(pct(w))), borderRadius:3, maxBarThickness:28, order:2},
+          {type:"line", label:"Weekly target", data:WEEKS.map(w => w.tgt), borderColor:C.gold, borderDash:[6,4], borderWidth:1.5, pointRadius:0, stepped:"middle", order:1}
+        ]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        interaction:{mode:"index", intersect:false},
+        plugins:{
+          legend:{display:false},
+          tooltip:{...tooltipBase, callbacks:{
+            label: c => c.dataset.type === "line" ? "Target: " + money(c.parsed.y) : money(c.parsed.y) + " · " + Math.round(pct(WEEKS[c.dataIndex])) + "% · " + statusName(pct(WEEKS[c.dataIndex]))
+          }}
+        },
+        scales:{x:xAxis, y:{beginAtZero:true, ticks:{callback:v => "$" + v / 1000 + "K"}}}
+      },
+      plugins:[fyDivider]
+    });
+
+    // 2 · Cumulative GF, current financial year
+    const fy = WEEKS.filter(w => w.cumA != null);
+    new Chart(document.getElementById("chart-cum"), {
+      type:"line",
+      data:{
+        labels: fy.map(w => w.d),
+        datasets:[
+          {label:"Actual", data:fy.map(w => w.cumA), borderColor:C.gold, backgroundColor:"rgba(201,168,76,.12)", fill:true, borderWidth:2, pointRadius:3, pointBackgroundColor:C.gold, tension:.2},
+          {label:"Target to date", data:fy.map(w => w.cumT), borderColor:"#7A8099", borderDash:[6,4], borderWidth:1.5, pointRadius:0, tension:0}
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        interaction:{mode:"index", intersect:false},
+        plugins:{
+          legend:{display:false},
+          tooltip:{...tooltipBase, callbacks:{
+            label: c => c.dataset.label + ": " + money(c.parsed.y),
+            afterBody: items => {
+              const w = fy[items[0].dataIndex], gap = w.cumA - w.cumT;
+              return "Gap: " + (gap < 0 ? "−" : "+") + money(Math.abs(gap)) + " (" + Math.round(w.cumA / w.cumT * 100) + "% of target)";
+            }
+          }}
+        },
+        scales:{x:xAxis, y:{beginAtZero:true, ticks:{callback:v => "$" + v / 1000 + "K"}}}
+      }
+    });
+
+    // 3 · Weekly attendance
+    new Chart(document.getElementById("chart-att"), {
+      type:"line",
+      data:{labels, datasets:[{label:"Attendance", data:WEEKS.map(w => w.att), borderColor:C.gold, backgroundColor:"rgba(201,168,76,.10)", fill:true, borderWidth:2, pointRadius:3, pointBackgroundColor:C.gold, tension:.25}]},
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        interaction:{mode:"index", intersect:false},
+        plugins:{legend:{display:false}, tooltip:{...tooltipBase, callbacks:{label:c => c.parsed.y.toLocaleString("en-AU") + " attended"}}},
+        scales:{x:xAxis, y:{suggestedMin:500, ticks:{precision:0}}}
+      },
+      plugins:[fyDivider]
+    });
+
+    // Subtitles computed from the data so they stay current as rows are added
+    const cur = WEEKS.filter(w => w.fy === WEEKS[WEEKS.length - 1].fy);
+    const tally = {"On Target":0, "Watch":0, "Below Target":0};
+    cur.forEach(w => tally[statusName(pct(w))]++);
+    document.getElementById("sub-weekly").textContent =
+      "FY" + cur[0].fy + " so far: " + tally["On Target"] + " on target · " + tally["Watch"] + " watch · " + tally["Below Target"] + " below target";
+    const last = fy[fy.length - 1], gap = last.cumA - last.cumT;
+    document.getElementById("sub-cum").textContent =
+      moneyK(last.cumA) + " vs " + moneyK(last.cumT) + " target to date · gap " + moneyK(gap) + " (" + Math.round(last.cumA / last.cumT * 100) + "%)";
+    const avg = Math.round(cur.reduce((s, w) => s + w.att, 0) / cur.length);
+    document.getElementById("sub-att").textContent =
+      "Latest " + WEEKS[WEEKS.length - 1].att + " · FY" + cur[0].fy + " average " + avg;
+  </script>
 </body>
 </html>
