@@ -49,11 +49,11 @@ const data = {
     { fund: "Mission Fund", zh: "宣教基金", cash: { s845: 200.00, mand: 20.00 },
       etransfer: { cant: 700.00, eng: 345.00 } },
     { fund: "Building Fund", zh: "建堂基金", cash: { s1030_1215: 620.00 },
-      etransfer: { cant: 40.00 } },
+      etransfer: { eng: 40.00 } },
     { fund: "Welfare Fund", zh: "慈惠基金", cash: { s1030_1215: 50.00 },
-      etransfer: { cant: 10.00 } },
+      etransfer: { eng: 10.00 } },
     { fund: "Seminary Student Fund", zh: "神學生基金", cash: {},
-      etransfer: { cant: 10.00 } },
+      etransfer: { eng: 10.00 } },
     { fund: "Lunch Income", zh: "午餐收入", cash: { eng: 170.00 },
       etransfer: { eng: 1259.00 } },
     { fund: "Youth Camp", zh: "青年營", cash: {},
@@ -68,9 +68,10 @@ const data = {
 const fmt = (n) => (n == null ? "—" : "$" + n.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 const fmtK = (n) => {
   if (n == null) return "—";
-  if (Math.abs(n) >= 1000000) return "$" + (n / 1000000).toFixed(2) + "M";
-  if (Math.abs(n) >= 1000) return "$" + (n / 1000).toFixed(1) + "K";
-  return "$" + n.toFixed(0);
+  const sg = n < 0 ? "−" : "", a = Math.abs(n);
+  if (a >= 1000000) return sg + "$" + (a / 1000000).toFixed(2) + "M";
+  if (a >= 1000) return sg + "$" + (a / 1000).toFixed(1) + "K";
+  return sg + "$" + a.toFixed(0);
 };
 const sumV = (...vals) => vals.reduce((s, v) => s + (v || 0), 0);
 
